@@ -21,12 +21,18 @@ const userTodoSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
-    date: () => Date.now(),
+    date: {
+        type: Date,
+        default: () => {
+            const date = Date.now()
+            return date
+        }
+    },
     category: {
         type: String,
         default: "other"
     },
-    conpleted: {
+    completed: {
         type: Boolean,
         default: false
     }

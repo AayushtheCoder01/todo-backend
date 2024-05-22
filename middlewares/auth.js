@@ -8,6 +8,7 @@ async function userAuth(req, res, next) {
         const verify = jwt.verify(authtoken, jwtKey)
         
         const user = await userDb.findOne({username: verify.username})
+        if(user === null) throw err
         if (verify.username == user.username) {
             req.userData = user
             next()

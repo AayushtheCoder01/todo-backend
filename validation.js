@@ -6,9 +6,16 @@ const createTodo = zod.object({
     category : zod.string().min(0)
 })
 
+const deleteTodo = zod.object({
+    todoId: zod.string()
+})
+
 const updateTodo = zod.object({
     title: zod.string().min(1),
-    description: zod.string().min(1)
+    description: zod.string().min(1),
+    category : zod.string().min(0),
+    completed : zod.boolean(),
+    todoId: zod.string()
 })  
 
 const createUser = zod.object({
@@ -21,5 +28,6 @@ const createUser = zod.object({
 module.exports= {
     createTodo: createTodo,
     updateTodo: updateTodo,
-    createUser: createUser
+    createUser: createUser,
+    deleteTodo: deleteTodo,
 }

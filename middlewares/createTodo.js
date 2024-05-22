@@ -6,7 +6,7 @@ function validateTodo(req, res, next) {
     const parsedData = createTodo.safeParse({
         title: req.body.title,
         description: req.body.description,
-        category: req.body.category
+        category: req.body.category || "other"
     })
     const authtoken = req.headers.authorization
     
