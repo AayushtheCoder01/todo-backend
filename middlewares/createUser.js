@@ -5,13 +5,14 @@ function validateUser(req, res, next) {
         username: req.body.username,
         password: req.body.password
     })
+    console.log(parsedData)
 
     if (parsedData.success) {
         req.userData = parsedData
         next()
     } else {
         res.status(400).json({
-            msg: parsedData.error.errors
+            msg: "Email or password must be greater than 5"
         })
     }
 }

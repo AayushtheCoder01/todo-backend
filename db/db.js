@@ -1,4 +1,5 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const { array } = require("zod");
 
 mongoose.connect('mongodb+srv://aayushkr:1234@cluster0.gx4bz1m.mongodb.net/todos')
 
@@ -8,6 +9,20 @@ const userSchema = new mongoose.Schema({
     userTodos: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: "todos"
+    },
+    usercategory: {
+        type: [String],
+        default: "coding", 
+    },
+    userCreatedAt: {
+        type: String,
+        default: () => {
+            const date = new Date();
+            const time = date.getTime();
+            String(time)
+            console.log(time);
+            return time
+        }
     }
 })
 
@@ -24,13 +39,15 @@ const userTodoSchema = new mongoose.Schema({
     date: {
         type: Date,
         default: () => {
-            const date = Date.now()
-            return date
+            const date = new Date();
+            const time = date.getTime();
+            String(time)
+            return time
         }
     },
     category: {
         type: String,
-        default: "other"
+        default: "coding",
     },
     completed: {
         type: Boolean,

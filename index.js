@@ -8,6 +8,7 @@ const validateTodo = require("./middlewares/createTodo")
 const {userDb, userTodoDb} = require("./db/db")
 const todoUpdateValidation = require("./middlewares/updateTodo")
 const deleteTodoValidation = require("./middlewares/deleteValidation")
+const addCategory = require("./middlewares/addCategory")
 const port = process.env.PORT
  
 const app = express()
@@ -21,19 +22,19 @@ app.use((err, req, res, next) => {
     next();
 });
 
-app.get('/', userAuth, async(req, res) =>{
+app.get('/sessionsignin', userAuth, async(req, res) =>{
     const userData = req.userData
 
-    const userTodos = await userTodoDb.find({
-        _id: {
-            "$in" : userData.userTodos
-        }
-    }) 
+    // const userTodos = await userTodoDb.find({
+    //     _id: {
+    //         "$in" : userData.userTodos
+    //     }
+    // }) 
+
     res.json({
-        msg: "hello from backend.",
+        msg: "session login successful.",
         login: true,
         userData: userData,
-        userTodos: userTodos
     })
 })
 
@@ -46,17 +47,19 @@ app.get('/todos', userAuth, async(req, res) =>{
     }) 
     res.json({
         msg: "todo fetched successfully.",
+        status: 200,
         userTodos: userTodos
     })
 })
-0
+
+
 app.post("/login", validateUser, async (req, res) => {
     const userData = req.userData.data
     try {
         const user = await userDb.findOne({username: userData.username, password: userData.password})
         console.log(user)
         if (user === null) throw err
-        const authtoken = jwt.sign({username: user.username, password: user.password}, jwtKey, {expiresIn: "24h"} )
+        const authtoken = jwt.sign({username: user.username, password: user.password}, jwtKey, {expiresIn: "1d"} )
 
         res.status(200).json({
         msg: "login successful",
@@ -66,26 +69,35 @@ app.post("/login", validateUser, async (req, res) => {
     })
     } catch (error) {
         res.status(400).json({
-            msg: "wrong credentials",
+            msg: "invalid credentials",
             login: false,
         })
     }
 })
 
-app.post("/signup", validateUser, (req, res) => {
+app.post("/signup", validateUser, async(req, res) => {
     const userData = req.userData.data
+    const isExixt = await userDb.findOne({username: userData.username})
 
-    const authtoken = jwt.sign(userData, jwtKey, {expiresIn: "7d"})
-     userDb.create({
-        username: userData.username,
-        password: userData.password
-    }).then((res) => {
-        console.log("user created successfully.")
-    })
-    res.json({
-        msg: "signup successful",
-        authorization: authtoken
-    }).status(200)
+    if(isExixt === null) {
+        const authtoken = jwt.sign(userData, jwtKey, {expiresIn: "1d"})
+        const createUser = await userDb.create({
+           username: userData.username,
+           password: userData.password
+       })
+       const user = await userDb.findOne({username: userData.username})
+       res.json({
+           msg: "signup successful",
+           signup: true,
+           userData: user,
+           authorization: authtoken
+       }).status(200) 
+    } else {
+        res.json({
+            signup: false,
+            msg: "Email already exist.",
+    }).status(400)
+}
     
 })
 
@@ -106,10 +118,12 @@ app.post("/createtodo", validateTodo, async (req, res) => {
     
         res.status(200).json({
             msg: "todo created",
+            status: true,
             todoId: todoCreate._id,
         })
     } catch (error) {
         res.status(400).json({
+            status: false,
             msg: "request failed",
         })
     }
@@ -129,17 +143,19 @@ app.put("/updatetodo", todoUpdateValidation, async (req, res) => {
         todo.save() 
 
         res.status(200).json({
+            status: true,
             msg: "todo updated successfully.",
             updatedTodo: todo
         })
     } catch (error) {
         res.status(400).json({
-            msg: "wrong todo id"
+            status: false,
+            msg: "todo not updated."
         })
     }
 })
 
-app.delete("/deletetodo", deleteTodoValidation, async (req, res) => {
+app.post("/deletetodo", deleteTodoValidation, async (req, res) => {
     const todoId = req.todoId
     const username = req.username
     try {
@@ -156,12 +172,38 @@ app.delete("/deletetodo", deleteTodoValidation, async (req, res) => {
         )
 
         res.status(200).json({
+            status: true,
             msg: "todo deleted."
         })
 
     } catch (error) {
         res.status(400).json({
+            status: false,
             msg: "request failed"
+        })
+    }
+    
+})
+
+app.post("/addcategory", addCategory, async (req, res) => {
+    try {
+        const username = req.username
+
+    const newCategory = req.body.newcategory
+
+    const updateUser = await userDb.findOne({username: username})
+
+    updateUser.usercategory.push(newCategory)
+    updateUser.save()
+
+    res.status(200).json({
+        msg: "New category added",
+        status: true,
+    })
+    } catch (error) {
+        res.status(400).json({
+            msg: "request failed",
+            status: false,
         })
     }
     
