@@ -12,7 +12,7 @@ async function addCategory(req, res, next) {
         }
     } catch (error) {
         res.json({
-            msg: "auth not verified", 
+            msg: "Auth not verified", 
             status: false,
         }).status(400)
     }
