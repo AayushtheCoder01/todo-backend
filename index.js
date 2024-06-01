@@ -9,6 +9,7 @@ const {userDb, userTodoDb} = require("./db/db")
 const todoUpdateValidation = require("./middlewares/updateTodo")
 const deleteTodoValidation = require("./middlewares/deleteValidation")
 const addCategory = require("./middlewares/addCategory")
+const sendnMail = require("./middlewares/signupMail")
 const port = process.env.PORT
  
 const app = express()
@@ -75,7 +76,7 @@ app.post("/login", validateUser, async (req, res) => {
     }
 })
 
-app.post("/signup", validateUser, async(req, res) => {
+app.post("/signup", validateUser, sendnMail, async(req, res) => {
     const userData = req.userData.data
     const isExixt = await userDb.findOne({username: userData.username})
 

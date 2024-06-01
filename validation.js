@@ -19,7 +19,7 @@ const updateTodo = zod.object({
 })  
 
 const createUser = zod.object({
-    username: zod.string().min(5),
+    username: zod.string().min(5).email(),
     password: zod.string().min(2)
 })
 

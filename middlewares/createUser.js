@@ -12,7 +12,7 @@ function validateUser(req, res, next) {
         next()
     } else {
         res.status(400).json({
-            msg: "Email or password must be greater than 5"
+            msg: "wrong inputs"
         })
     }
 }
