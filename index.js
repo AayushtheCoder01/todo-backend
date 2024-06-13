@@ -60,7 +60,7 @@ app.post("/login", validateUser, async (req, res) => {
         const user = await userDb.findOne({username: userData.username, password: userData.password})
         console.log(user)
         if (user === null) throw err
-        const authtoken = jwt.sign({username: user.username, password: user.password}, jwtKey, {expiresIn: "1d"} )
+        const authtoken = jwt.sign({username: user.username, password: user.password}, jwtKey, {expiresIn: "10d"} )
 
         res.status(200).json({
         msg: "login successful",
@@ -81,7 +81,7 @@ app.post("/signup", validateUser, sendnMail, async(req, res) => {
     const isExixt = await userDb.findOne({username: userData.username})
 
     if(isExixt === null) {
-        const authtoken = jwt.sign(userData, jwtKey, {expiresIn: "1d"})
+        const authtoken = jwt.sign(userData, jwtKey, {expiresIn: "10d"})
         const createUser = await userDb.create({
            username: userData.username,
            password: userData.password
