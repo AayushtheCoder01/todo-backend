@@ -8,7 +8,7 @@ async function sendnMail(req, res, next) {
         service: 'gmail',
         auth: {
             user: 'kumaraayush.user@gmail.com', // your email
-            pass: 'bfre mnaz ylfe drjm' // your email password
+            pass: 'prue suup pnyo mtmw' // your email password
         }
     });
 
